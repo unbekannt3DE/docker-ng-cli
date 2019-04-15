@@ -10,7 +10,7 @@
 #we therefore add gcc
 FROM node:lts-slim
 
-MAINTAINER trion development GmbH "info@trion.de"
+MAINTAINER unbk.me "dev@unbekannt3.eu"
 
 ARG USER_HOME_DIR="/tmp"
 ARG APP_DIR="/app"
@@ -51,4 +51,3 @@ RUN set -xe \
     && chown -R node /usr/local/lib /usr/local/include /usr/local/share /usr/local/bin \
     && (cd "$USER_HOME_DIR"; su node -c "npm install -g @angular/cli@$NG_CLI_VERSION; npm install -g yarn; chmod +x /usr/local/bin/yarn; npm cache clean --force")
 
-USER $USER_ID
