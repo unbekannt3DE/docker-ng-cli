@@ -35,6 +35,8 @@ RUN apt-get update && apt-get install -qqy --no-install-recommends \
     build-essential \
     python \
     procps \
+    openssh-client \
+    rsync \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 ARG NG_CLI_VERSION=7.3.8
@@ -51,3 +53,4 @@ RUN set -xe \
     && chown -R node /usr/local/lib /usr/local/include /usr/local/share /usr/local/bin \
     && (cd "$USER_HOME_DIR"; su node -c "npm install -g @angular/cli@$NG_CLI_VERSION; npm install -g yarn; chmod +x /usr/local/bin/yarn; npm cache clean --force")
 
+USER $USER_ID
