@@ -1,3 +1,10 @@
+FROM alpine AS builder
+
+# Download QEMU, see https://github.com/docker/hub-feedback/issues/1261
+ENV QEMU_URL https://github.com/balena-io/qemu/releases/download/v3.0.0%2Bresin/qemu-3.0.0+resin-arm.tar.gz
+RUN apk add curl && curl -L ${QEMU_URL} | tar zxvf - -C . --strip-components 1
+
+
 #simple angular-cli docker installation
 #docker build -t ng-cli .
 #or specify angular-cli version
@@ -8,9 +15,13 @@
 #alternative to reduce size instead of alpine, but does not
 #include build tools for native compilation of npm packages
 #we therefore add gcc
-FROM node:lts-slim
+FROM arm32v7/node:lts-slim
 
-MAINTAINER unbk.me "dev@unbekannt3.eu"
+# Add QEMU
+COPY --from=builder qemu-arm-static /usr/bin
+
+
+MAINTAINER trion development GmbH "info@trion.de"
 
 ARG USER_HOME_DIR="/tmp"
 ARG APP_DIR="/app"
@@ -35,6 +46,7 @@ RUN apt-get update && apt-get install -qqy --no-install-recommends \
     dumb-init \
     git \
     build-essential \
+    python \
     procps \
     rsync \
     zip \
@@ -54,3 +66,5 @@ RUN set -xe \
     && chown $USER_ID $APP_DIR \
     && chown -R node /usr/local/lib /usr/local/include /usr/local/share /usr/local/bin \
     && (cd "$USER_HOME_DIR"; su node -c "npm install -g @angular/cli@$NG_CLI_VERSION; npm install -g yarn; chmod +x /usr/local/bin/yarn; npm cache clean --force")
+
+USER $USER_ID
